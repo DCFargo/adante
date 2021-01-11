@@ -2,9 +2,9 @@
 mod tests;
 
 pub trait ArgumentType {
-    fn from_str<E: Error>(key: &str) -> Result<Self, E>
-        where Self: std::marker::Sized;
-    fn ret_err<E: Error>(&self) -> E;
+    fn from_str<E: Error>(key: &str, error: E) -> Result<Self, E>
+    where
+        Self: std::marker::Sized;
 }
 
 pub trait Error {
@@ -35,7 +35,7 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
             actions: Vec::new(),
         }
     }
-    fn parse<E: Error>(env_args: Vec<&str>) -> Result<Arguments<F, A>, E> {
+    fn parse<E: Error + Clone + Copy>(env_args: Vec<&str>, error: E) -> Result<Arguments<F, A>, E> {
         let mut args = Arguments::new();
         let mut eq_pos: usize = 0;
         for arg in env_args.iter() {
@@ -50,26 +50,26 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
                 // Assume no value if no =:
                 if eq_pos == 0 {
                     args.flags.push(Flag {
-                        key: match F::from_str(arg) {
+                        key: match F::from_str(arg, error.clone()) {
                             Ok(v) => v,
                             Err(e) => return Err(e),
                         },
-                        value: None
+                        value: None,
                     })
                 } else {
                     let key = &arg[0..eq_pos];
                     let val = &arg[(eq_pos + 1)..];
                     args.flags.push(Flag {
-                        key: match F::from_str(arg) {
+                        key: match F::from_str(arg, error.clone()) {
                             Ok(v) => v,
                             Err(e) => return Err(e),
                         },
                         // TODO: make value field a &str by default
-                        value: Some(val.to_string())
+                        value: Some(val.to_string()),
                     })
                 }
             } else {
-                args.actions.push(match A::from_str(arg) {
+                args.actions.push(match A::from_str(arg, error) {
                     Ok(v) => v,
                     Err(e) => return Err(e),
                 })
