@@ -27,6 +27,7 @@ enum TestFlagType {
     Help,
     Verbose,
     Print,
+    TestFail, // NOTE: For testing only, use instead of std::process::exit
 }
 impl ArgumentType for TestFlagType {
     fn from_str<TestErrorType>(key: &str, error: TestErrorType) -> Result<Self, TestErrorType> {
@@ -44,6 +45,7 @@ enum TestActionType {
     Add,
     Remove,
     Edit,
+    TestFail, // NOTE: For testing only, use instead of std::process::exit
 }
 
 impl ArgumentType for TestActionType {
@@ -67,19 +69,23 @@ fn simulate(env_args: Vec<&str>) -> Result<Arguments<TestFlagType, TestActionTyp
         };
 }
 
-// NOTE: Parsing flags is ok, all tests pass
 #[test]
 fn parse_flag_key_from_str() {
     let env_args = match simulate(vec!["-v"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.flags[0].key, TestFlagType::Verbose)
 }
 
+// FIXME: FAILS
+// FIXME: Has to do with how the parse method
+//        interprets the value of a flag that is given
+//        my best bet is string slice issues,
+//        though I'm not sure
 #[test]
 fn parse_flag_val_from_str() {
     let env_args = match simulate(vec!["-h=test"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.flags[0].value, Some("test".to_string()));
 }
@@ -87,7 +93,7 @@ fn parse_flag_val_from_str() {
 #[test]
 fn no_misinterpret_flag_as_action() {
     let env_args = match simulate(vec!["-v"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.actions.len(), 0);
 }
@@ -95,31 +101,48 @@ fn no_misinterpret_flag_as_action() {
 #[test]
 fn parse_noval_flag() {
     let env_args = match simulate(vec!["-v"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.flags[0].key, TestFlagType::Verbose);
     assert_eq!(env_args.flags[0].value, None);
     assert_eq!(env_args.actions.len(), 0);
 }
 
+// FIXME: FAILS
 #[test]
 fn parse_val_flag() {
     let env_args = match simulate(vec!["-h=test"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.flags[0].key, TestFlagType::Help);
     assert_eq!(env_args.flags[0].value, Some("test".to_string()));
     assert_eq!(env_args.actions.len(), 0);
 }
 
-// FIXME: Automated testing fails here
-// I believe it to be the from_str() function, though theres nothing concerning
-// Maybe its a String/&str error? Create tests for each step in the process
-// Extract simulate and do direct testing
+#[test]
+fn flag_from_str() {
+    let ref_string = "-v";
+    let result = match TestFlagType::from_str(ref_string, TestErrorType::Syntax) {
+        Ok(t) => t,
+        Err(_) => TestFlagType::TestFail,
+    };
+    assert_eq!(result, TestFlagType::Verbose)
+}
+
+#[test]
+fn action_from_str() {
+    let ref_string = "add";
+    let result = match TestActionType::from_str(ref_string, TestErrorType::Syntax) {
+        Ok(t) => t,
+        Err(_) => TestActionType::TestFail,
+    };
+    assert_eq!(result, TestActionType::Add)
+}
+
 #[test]
 fn parse_action_from_str() {
     let env_args = match simulate(vec!["add"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.actions[0], TestActionType::Add)
 }
@@ -127,7 +150,7 @@ fn parse_action_from_str() {
 #[test]
 fn no_misinterpret_action_as_flag() {
     let env_args = match simulate(vec!["add"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.flags.len(), 0)
 }
@@ -135,7 +158,7 @@ fn no_misinterpret_action_as_flag() {
 #[test]
 fn parse_action() {
     let env_args = match simulate(vec!["add"]) {
-        Ok(a) => a, Err(e) => return e.handle()
+        Ok(a) => a, Err(_) => Arguments::new()
     };
     assert_eq!(env_args.actions[0], TestActionType::Add);
     assert_eq!(env_args.actions.len(), 1);

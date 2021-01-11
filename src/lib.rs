@@ -68,7 +68,6 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
             // TODO: Recognize file path, omit or save to output
             } else {
                 // Assume action, match string to type
-                // FIXME: from_str likely breaks here (01-11)
                 args.actions.push(match A::from_str(arg, error) {
                     Ok(v) => v,
                     Err(e) => return Err(e),
