@@ -35,7 +35,7 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
             actions: Vec::new(),
         }
     }
-    fn parse<E: Error>(env_args: Vec<String>) -> Result<Arguments<F, A>, E> {
+    fn parse<E: Error>(env_args: Vec<&str>) -> Result<Arguments<F, A>, E> {
         let mut args = Arguments::new();
         let mut eq_pos: usize = 0;
         for arg in env_args.iter() {
