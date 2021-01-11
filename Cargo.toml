@@ -1,6 +1,6 @@
 [package]
-name = "argo"
-version = "0.1.0"
+name = "adante"
+version = "0.1.1"
 authors = ["Andrew Fargo <drew.fargo@gmail.com>"]
 edition = "2018"
 
