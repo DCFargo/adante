@@ -1,1 +1,1 @@
-/home/dcfargo/Applications/Libraries/argo/target/debug/libargo.rlib: /home/dcfargo/Applications/Libraries/argo/src/lib.rs
+/Users/dcfargo/argo/target/debug/libargo.rlib: /Users/dcfargo/argo/src/lib.rs

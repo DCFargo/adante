@@ -53,11 +53,13 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
                         },
                         value: None,
                     })
+                // Seperator found
+                // FIXME: BREAKS HERE
                 } else {
                     let key = &arg[0..eq_pos];
                     let val = &arg[(eq_pos + 1)..];
                     args.flags.push(Flag {
-                        key: match F::from_str(arg, error.clone()) {
+                        key: match F::from_str(key, error.clone()) {
                             Ok(v) => v,
                             Err(e) => return Err(e),
                         },

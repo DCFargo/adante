@@ -77,11 +77,6 @@ fn parse_flag_key_from_str() {
     assert_eq!(env_args.flags[0].key, TestFlagType::Verbose)
 }
 
-// FIXME: FAILS
-// FIXME: Has to do with how the parse method
-//        interprets the value of a flag that is given
-//        my best bet is string slice issues,
-//        though I'm not sure
 #[test]
 fn parse_flag_val_from_str() {
     let env_args = match simulate(vec!["-h=test"]) {
