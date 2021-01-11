@@ -12,14 +12,11 @@ pub trait Error {
     fn as_str(&self) -> &str;
 }
 
-// TODO: Find out where FlagType must be
-// PartialEq in par browser,
-// implement here or ArgumentType
 pub struct Flag<T: ArgumentType> {
     pub key: T,
-    // Thought making String generic here
+    // NOTE: Thought making String generic here
     // may have been overdoing it a bit.
-    // TODO: Make final decision on this
+    // Consider.
     pub value: Option<String>,
 }
 
@@ -68,7 +65,10 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
                         value: Some(val.to_string()),
                     })
                 }
+            // TODO: Recognize file path, omit or save to output
             } else {
+                // Assume action, match string to type
+                // FIXME: from_str likely breaks here (01-11)
                 args.actions.push(match A::from_str(arg, error) {
                     Ok(v) => v,
                     Err(e) => return Err(e),
