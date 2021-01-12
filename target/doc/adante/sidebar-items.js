@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Arguments",""],["Flag",""]],"trait":[["ArgumentType","A trait describing the shared methods of both Flags and Arguments"],["Error",""]]});
