@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["adante"] = [{"text":"impl&lt;T:&nbsp;Debug + ArgumentType&gt; Debug for Flag&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl&lt;F:&nbsp;Debug + ArgumentType, A:&nbsp;Debug + ArgumentType&gt; Debug for Arguments&lt;F, A&gt;","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
