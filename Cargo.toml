@@ -1,6 +1,6 @@
 [package]
 name = "adante"
-version = "0.1.1"
+version = "0.2.1"
 authors = ["Andrew Fargo <drew.fargo@gmail.com>"]
 description = "A versatile, small options parser for use in the command line"
 license-file = "LICESNE.txt"
