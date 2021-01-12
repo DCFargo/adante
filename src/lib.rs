@@ -33,6 +33,14 @@
 //! ## 2. Imply the `Error` trait from the library.
 //!
 //! ```
+//! use adante::Error;
+//! #[derive(Debug, Clone, Copy)] // Highly advised
+//! pub enum ErrorType {
+//!     Syntax,
+//!     InvalidAction,
+//!     InvalidFlag,
+//!     NoFlagVal,
+//! }
 //! impl Error for ErrorType {
 //!     fn handle(&self) {
 //!         println!("{}", self.as_str());
@@ -68,6 +76,12 @@
 //! ## 4. Imply the `ArgumentType` trait from the library.
 //!
 //! ```
+//! use adante::ArgumentType;
+//! enum FlagType {
+//!     Help,
+//!     Verbose,
+//!     Print,
+//! }
 //! impl ArgumentType for FlagType {
 //!     fn from_str<ErrorType>(key: &str, error: ErrorType)
 //!         -> Result<Self, ErrorType> {
@@ -78,6 +92,12 @@
 //!             _ => Err(error),
 //!         }
 //!     }
+//! }
+//!
+//! enum ActionType {
+//!     Add,
+//!     Remove,
+//!     Edit,
 //! }
 //! impl ArgumentType for ActionType {
 //!     fn from_str<ErrorType>(key: &str, error: ErrorType)
@@ -97,14 +117,6 @@
 //! Now your parser is complete! By plugging `std::env::args::collect()` into
 //! `Arguments::parse()`, you will get a working `Arguments` object!
 //!
-//! ```
-//! let env_args = std::env::args::collect();
-//! let env_args: Arguments<FlagType, ActionType> =
-//!     return match Arguments::parse(env_args, ErrorType::Syntax) {
-//!         Ok(a) => a,
-//!         Err(e) => return e.handle()
-//!     };
-//! ```
 
 #[cfg(test)]
 mod tests;
@@ -167,15 +179,47 @@ pub trait ArgumentType {
         Self: std::marker::Sized;
 }
 
+/// A trait that describes the functions an error must implement to be valid
+
 pub trait Error {
     /// A user implemented function that performs a task then exits
     /// depending on the type of error it is called on.
     ///
     /// In proper usage `std::process:exit(1)` would be used; however, this
     /// example just uses `assert_eq!(2 + 2, 4)` to validate the test.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use adante::Error;
+    ///
+    /// #[derive(Debug, Clone, Copy)]
+    /// enum ErrorType {
+    ///     Syntax,
+    ///     InvalidAction,
+    ///     InvalidFlag,
+    ///     NoFlagVal,
+    /// }
+    /// impl Error for ErrorType {
+    ///     fn handle(&self) {
+    ///         // Handle code goes here:
+    ///         match self {
+    ///             Self::Syntax => assert_eq!(2 + 2, 4),           // Only branch that should work
+    ///             Self::InvalidAction => assert_eq!(2 + 2, 5)
+    ///             Self::InvalidFlag => assert_eq!(2 + 2, 5)
+    ///             Self::NoFlagVal => assert_eq!(2 + 2, 5)
+    ///         }
+    ///     }
+    /// }
+    ///
+    /// let test_error = ErrorType::Syntax
+    /// test_error.handle();
+    /// ```
     fn handle(&self);
     fn as_str(&self) -> &str;
 }
+
+/// A subset struct of the `Arguments` struct that describes a Flag object
 
 #[derive(Debug)]
 pub struct Flag<T: ArgumentType> {
@@ -185,6 +229,8 @@ pub struct Flag<T: ArgumentType> {
     // Consider.
     pub value: Option<String>,
 }
+
+/// The meat of the library, describes an `Argument` object and its methods
 
 #[derive(Debug)]
 pub struct Arguments<F: ArgumentType, A: ArgumentType> {
