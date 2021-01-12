@@ -1,8 +1,9 @@
 ## Important note
 
 This package is no longer being maintained do to more active alternatives being available.
-This package has been removed from the crates.io registry, and if you need an alternative,
-please check out [pico-args](https://crates.io/crates/pico-args), it is what I now opt to use.
+This package will likely no longer be updated on the crates.io registry, and may see removal. 
+If you need an alternative, please check out [pico-args](https://crates.io/crates/pico-args), 
+it is what I now opt to use.
 
 # adante
 
