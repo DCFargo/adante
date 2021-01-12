@@ -205,14 +205,15 @@ pub trait Error {
     ///         // Handle code goes here:
     ///         match self {
     ///             Self::Syntax => assert_eq!(2 + 2, 4),           // Only branch that should work
-    ///             Self::InvalidAction => assert_eq!(2 + 2, 5)
-    ///             Self::InvalidFlag => assert_eq!(2 + 2, 5)
-    ///             Self::NoFlagVal => assert_eq!(2 + 2, 5)
+    ///             Self::InvalidAction => assert_eq!(2 + 2, 5),
+    ///             Self::InvalidFlag => assert_eq!(2 + 2, 5),
+    ///             Self::NoFlagVal => assert_eq!(2 + 2, 5),
     ///         }
     ///     }
+    ///     fn as_str(&self) -> &str {" "}
     /// }
     ///
-    /// let test_error = ErrorType::Syntax
+    /// let test_error = ErrorType::Syntax;
     /// test_error.handle();
     /// ```
     fn handle(&self);
@@ -241,13 +242,137 @@ pub struct Arguments<F: ArgumentType, A: ArgumentType> {
 }
 
 impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
-    fn new() -> Self {
+    /// A default constructor for the Arguments type.
+    ///
+    /// Note: explicit type must be specified when using a default constructor,
+    /// unlike vectors etc.
+    ///
+    /// # Examples
+    /// ```
+    /// use adante::{Arguments, ArgumentType};
+    ///
+    /// #[derive(Debug, Clone, Copy, PartialEq)]
+    /// enum FlagType {
+    ///     Help,
+    ///     Verbose,
+    ///     Print,
+    /// }
+    /// impl ArgumentType for FlagType {
+    ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
+    ///                                -> Result<Self, ErrorType> {
+    ///         match key {
+    ///             "-h" | "--help" => Ok(Self::Help),
+    ///             "-v" | "--verbose" => Ok(Self::Verbose),
+    ///             "-p" | "--print" => Ok(Self::Print),
+    ///             _ => Err(error),
+    ///         }
+    ///     }
+    /// }
+    /// enum ActionType {
+    ///     Add,
+    ///     Remove,
+    ///     Edit,
+    /// }
+    /// impl ArgumentType for ActionType {
+    ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
+    ///         -> Result<Self, ErrorType> {
+    ///         match key {
+    ///             "a" | "add" => Ok(Self::Add),
+    ///             "r" | "remove" => Ok(Self::Remove),
+    ///             "e" | "edit" => Ok(Self::Edit),
+    ///             _ => Err(error),
+    ///         }
+    ///     }
+    /// }
+    /// let blank_args: Arguments<FlagType, ActionType> = Arguments::new();
+    ///
+    /// assert_eq!(blank_args.flags.len(), 0);
+    /// assert_eq!(blank_args.actions.len(), 0);
+    /// ```
+    pub fn new() -> Self {
         Arguments {
             flags: Vec::new(),
             actions: Vec::new(),
         }
     }
-    fn parse<E: Error + Clone + Copy>(env_args: Vec<&str>, error: E) -> Result<Arguments<F, A>, E> {
+    /// The parsing function that returns a full Arguments object.
+    ///
+    /// More complicated usages and tests can be found in the tests.rs file.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use adante::{ArgumentType, Error, Arguments};
+    ///
+    /// #[derive(Debug, Clone, Copy)]
+    /// enum ErrorType {
+    ///     Syntax, // EXTREMELY simple example
+    ///             // More complex examples are shown in
+    ///             // the documentation for Error
+    /// }
+    /// impl Error for ErrorType {
+    ///     fn handle(&self) {
+    ///         ()
+    ///     }
+    ///     fn as_str(&self) -> &str {
+    ///         "Syntax Error"
+    ///     }
+    /// }
+    ///
+    ///
+    /// #[derive(Debug, Clone, Copy, PartialEq)]
+    /// enum FlagType {
+    ///     Help,
+    ///     Verbose,
+    ///     Print,
+    ///     TestFail, // NOTE: For testing only
+    ///               // Use Error
+    /// }
+    /// impl ArgumentType for FlagType {
+    ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
+    ///                                -> Result<Self, ErrorType> {
+    ///         match key {
+    ///             "-h" | "--help" => Ok(Self::Help),
+    ///             "-v" | "--verbose" => Ok(Self::Verbose),
+    ///             "-p" | "--print" => Ok(Self::Print),
+    ///             _ => Err(error),
+    ///         }
+    ///     }
+    /// }
+    /// enum ActionType {
+    ///     Add,
+    ///     Remove,
+    ///     Edit,
+    /// }
+    /// impl ArgumentType for ActionType {
+    ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
+    ///         -> Result<Self, ErrorType> {
+    ///         match key {
+    ///             "a" | "add" => Ok(Self::Add),
+    ///             "r" | "remove" => Ok(Self::Remove),
+    ///             "e" | "edit" => Ok(Self::Edit),
+    ///             _ => Err(error),
+    ///         }
+    ///     }
+    /// }
+    ///
+    /// let env_args = vec!["-v"];
+    /// let env_args: Arguments<FlagType, ActionType> =
+    ///     match Arguments::parse(env_args, ErrorType::Syntax) {
+    ///         Ok(a) => a,
+    ///         Err(e) => Arguments::new()
+    ///     };
+    ///
+    /// let mut result: FlagType = FlagType::TestFail;
+    ///
+    /// if env_args.flags.len() != 0 {
+    ///     result = env_args.flags[0].key;
+    /// }
+    ///
+    /// assert_eq!(result, FlagType::Verbose);
+    ///
+    /// ```
+    pub fn parse<E: Error + Clone + Copy>(env_args: Vec<&str>, error: E) -> Result<Arguments<F, A>, E> {
         let mut args = Arguments::new();
         let mut eq_pos: usize = 0;
         for arg in env_args.iter() {
