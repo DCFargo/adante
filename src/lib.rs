@@ -234,7 +234,9 @@ pub struct Flag<T: ArgumentType> {
 
 #[derive(Debug)]
 pub struct Arguments<F: ArgumentType, A: ArgumentType> {
+    /// A list of the user defined Flag types and optional values
     pub flags: Vec<Flag<F>>,
+    /// A list of the user defined Action types
     pub actions: Vec<A>,
 }
 
