@@ -30,7 +30,8 @@ enum TestFlagType {
     TestFail, // NOTE: For testing only, use instead of std::process::exit
 }
 impl ArgumentType for TestFlagType {
-    fn from_str<TestErrorType>(key: &str, error: TestErrorType) -> Result<Self, TestErrorType> {
+    fn from_str<TestErrorType>(key: &str, error: TestErrorType)
+                               -> Result<Self, TestErrorType> {
         match key {
             "-h" | "--help" => Ok(Self::Help),
             "-v" | "--verbose" => Ok(Self::Verbose),
