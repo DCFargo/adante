@@ -1,4 +1,4 @@
-use crate::{ArgumentType, Arguments, Error, Flag};
+use crate::{ArgumentType, Arguments, Error};
 
 #[derive(Debug, Clone, Copy)]
 pub enum TestErrorType {
@@ -30,7 +30,8 @@ enum TestFlagType {
     TestFail, // NOTE: For testing only, use instead of std::process::exit
 }
 impl ArgumentType for TestFlagType {
-    fn from_str<TestErrorType>(key: &str, error: TestErrorType) -> Result<Self, TestErrorType> {
+    fn from_str<TestErrorType>(key: &str, error: TestErrorType)
+                               -> Result<Self, TestErrorType> {
         match key {
             "-h" | "--help" => Ok(Self::Help),
             "-v" | "--verbose" => Ok(Self::Verbose),
@@ -62,7 +63,7 @@ impl ArgumentType for TestActionType {
 // "Simulates" running a program with arguments, collected by std::env::args::collect()
 // NOTE: File path is omitted, would cause error as of 01-11
 fn simulate(env_args: Vec<&str>) -> Result<Arguments<TestFlagType, TestActionType>, TestErrorType> {
-    let env_args: Arguments<TestFlagType, TestActionType> =
+    let _env_args: Arguments<TestFlagType, TestActionType> =
         return match Arguments::parse(env_args, TestErrorType::Syntax) {
             Ok(a) => Ok(a),
             Err(e) => Err(e),
