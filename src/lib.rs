@@ -30,7 +30,7 @@
 //! }
 //! ```
 //!
-//! ## 2. Imply the `Error` trait from the library.
+//! ## 2. Implement the `Error` trait from the library.
 //!
 //! ```
 //! use adante::Error;
@@ -73,7 +73,7 @@
 //! }
 //! ```
 //!
-//! ## 4. Imply the `ArgumentType` trait from the library.
+//! ## 4. Implement the `ArgumentType` trait from the library.
 //!
 //! ```
 //! use adante::ArgumentType;
