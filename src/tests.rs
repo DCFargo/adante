@@ -1,4 +1,5 @@
-use crate::{ArgumentType, Arguments, Error};
+use crate::traits::{ArgumentType, Error};
+use crate::Arguments;
 
 #[derive(Debug, Clone, Copy)]
 pub enum TestErrorType {
@@ -39,6 +40,7 @@ impl ArgumentType for TestFlagType {
             _ => Err(error),
         }
     }
+    fn handle(&self) {  }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -58,6 +60,7 @@ impl ArgumentType for TestActionType {
             _ => Err(error),
         }
     }
+    fn handle(&self) {  }
 }
 
 // "Simulates" running a program with arguments, collected by std::env::args::collect()

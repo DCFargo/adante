@@ -6,7 +6,7 @@ pub trait ArgumentType {
     ///
     /// # Examples
     /// ```
-    /// use adante::{ArgumentType, Error};
+    /// use adante::traits::{ArgumentType, Error};
     ///
     /// #[derive(Debug, Clone, Copy)]
     /// enum ErrorType {
@@ -29,8 +29,7 @@ pub trait ArgumentType {
     ///     Help,
     ///     Verbose,
     ///     Print,
-    ///     TestFail, // NOTE: For testing only
-    ///               // Use Error
+    ///     TestFail, // NOTE: For testing only // Use Error
     /// }
     /// impl ArgumentType for FlagType {
     ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
@@ -54,6 +53,8 @@ pub trait ArgumentType {
     fn from_str<E: Error>(key: &str, error: E) -> Result<Self, E>
     where
         Self: std::marker::Sized;
+
+    // TODO: finish docs & test here
     /// A user implemented function that peforms a task or function
     /// depending on the type of error it is called on.
     ///
@@ -65,8 +66,6 @@ pub trait ArgumentType {
     /// use adante::
     /// ```
     fn handle(&self);
-
-    // TODO: Handle func here: similar to how errors are handled.
 }
 
 /// A trait that describes the functions an error must implement to be valid
@@ -81,7 +80,7 @@ pub trait Error {
     /// # Examples
     ///
     /// ```
-    /// use adante::Error;
+    /// use adante::traits::Error;
     ///
     /// #[derive(Debug, Clone, Copy)]
     /// enum ErrorType {

@@ -33,7 +33,7 @@
 //! ## 2. Implement the `Error` trait from the library.
 //!
 //! ```
-//! use adante::Error;
+//! use adante::traits::Error;
 //! #[derive(Debug, Clone, Copy)] // Highly advised
 //! pub enum ErrorType {
 //!     Syntax,
@@ -66,7 +66,7 @@
 //!     Print,
 //! }
 //!
-//! enum ActionType {
+//!//! enum ActionType {
 //!     Add,
 //!     Remove,
 //!     Edit,
@@ -120,11 +120,9 @@
 
 #[cfg(test)]
 mod tests;
-mod arg_type;
-mod error;
+pub mod traits;
 
-use arg_type::ArgumentType;
-use error::Error;
+use traits::{ArgumentType, Error};
 
 /// A subset struct of the `Arguments` struct that describes a Flag object
 
@@ -165,7 +163,7 @@ impl<F: ArgumentType, A: ArgumentType> Arguments<F, A> {
     /// }
     /// impl ArgumentType for FlagType {
     ///     fn from_str<ErrorType>(key: &str, error: ErrorType)
-    ///                                -> Result<Self, ErrorType> {
+    ///         -> Result<Self, ErrorType> {
     ///         match key {
     ///             "-h" | "--help" => Ok(Self::Help),
     ///             "-v" | "--verbose" => Ok(Self::Verbose),
